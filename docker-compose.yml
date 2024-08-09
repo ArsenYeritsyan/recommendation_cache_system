@@ -1,0 +1,29 @@
+version: '3'
+services:
+  generator:
+    build:
+      context: ./generator_service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+  invoker:
+    build:
+      context: ./invoker_service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5000"
+    depends_on:
+      - redis
+      - generator
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  tests:
+    build:
+      context: ./tests
+      dockerfile: Dockerfile
+    depends_on:
+      - generator
+      - invoker
+      - redis
